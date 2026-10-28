@@ -224,22 +224,217 @@ h2.sec{margin:0;font-family:var(--f-display);font-weight:600;font-size:clamp(26p
 /* ---------- HOW IT WORKS ---------- */
 .how{padding-block:72px 40px}
 .how-head{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:16px;margin-bottom:28px}
-.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;counter-reset:st}
-.step{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px 22px 20px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:44px}
+.step{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:0 22px 20px;display:flex;flex-direction:column;gap:10px;min-width:0;transition:transform .5s cubic-bezier(.2,.8,.2,1),box-shadow .5s,border-color .5s}
 .step-top{display:flex;align-items:center;gap:12px}
-.step-ic{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);flex:none}
-.step-ic svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .step-n{font-family:var(--f-display);font-weight:600;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .step h3{margin:0;font-family:var(--f-display);font-weight:600;font-size:20px;letter-spacing:-.02em}
 .step p{margin:0;color:var(--muted)}
 .step .link{margin-top:auto;align-self:flex-start;padding-top:6px}
+.how.is-live .step.is-on{transform:translateY(-6px);border-color:var(--accent);box-shadow:var(--shadow)}
+/* arrows between the cards light up as the story moves on */
+.step:not(:last-child)::after{content:"";position:absolute;top:100px;right:-38px;width:32px;height:32px;box-sizing:border-box;border-radius:50%;background:var(--surface);border:1px solid var(--line);z-index:1;transition:background .4s,border-color .4s}
+.step:not(:last-child)::before{content:"";position:absolute;top:112px;right:-26px;width:8px;height:8px;border-top:2.5px solid var(--muted);border-right:2.5px solid var(--muted);transform:rotate(45deg);z-index:2;transition:border-color .4s}
+.step.is-done:not(:last-child)::after{background:var(--accent-soft);border-color:var(--accent)}
+.step.is-done:not(:last-child)::before{border-color:var(--accent)}
+.step.is-lead::before{animation:hwNudge .8s ease-in-out 3}
+@keyframes hwNudge{50%{transform:translateX(4px) rotate(45deg)}}
+/* demo controls */
+.hw-ctl{display:flex;align-items:center;gap:2px;padding:4px;border:1px solid var(--line);border-radius:999px;background:var(--surface);box-shadow:var(--shadow)}
+.hw-ctl button{width:36px;height:36px;border:0;border-radius:50%;background:none;color:var(--muted);font:700 14px/1 var(--f-text);cursor:pointer;display:grid;place-items:center;padding:0;transition:background .3s,color .3s}
+.hw-ctl button:hover{color:var(--ink);background:var(--surface-2)}
+.hw-ctl button[aria-current="step"]{background:var(--fill);color:var(--fill-ink)}
+.hw-ctl button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.hw-ctl .hw-pp{margin-left:5px;position:relative}
+.hw-ctl .hw-pp::before{content:"";position:absolute;left:-4px;top:9px;bottom:9px;width:1px;background:var(--line)}
+.hw-pp svg{width:16px;height:16px;fill:currentColor}
+.hw-pp .i-play,.how.is-upaused .hw-pp .i-pause{display:none}
+.how.is-upaused .hw-pp .i-play{display:block}
+.how.is-still .hw-ctl,.how.is-still .hw-bar{display:none}
+/* the little stage on top of each card */
+.hw-stage{position:relative;height:224px;margin:0 -22px 4px;border-radius:17px 17px 0 0;overflow:hidden;isolation:isolate;cursor:pointer;background:radial-gradient(120% 90% at 50% 0%,var(--accent-soft),transparent 70%),var(--surface-2)}
+.hw-bar{position:absolute;left:12px;right:12px;top:10px;height:4px;border-radius:4px;background:var(--line);overflow:hidden;z-index:6}
+.hw-bar i{display:block;height:100%;background:var(--accent);transform:scaleX(0);transform-origin:left}
+.step.is-done .hw-bar i{transform:none}
+.step.is-on .hw-bar i{animation:hwFill var(--dur,7s) linear both}
+@keyframes hwFill{from{transform:scaleX(0)}to{transform:none}}
+.hw-sc{position:absolute;left:50%;top:22px;width:260px;height:196px;margin-left:-130px;font-family:var(--f-text);color:var(--ink);transition:opacity .5s,filter .5s}
+.how.is-live .step:not(.is-on) .hw-sc{opacity:.5;filter:saturate(.5)}
+.how.is-live .step:not(.is-on) .hw-stage:hover .hw-sc{opacity:.85}
+.hw-sc i{font-style:normal}
+.hw-sc svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.hw-ph{position:absolute;left:6px;top:0;width:112px;height:196px;box-sizing:border-box;padding:5px;border-radius:22px;background:#1B2333;box-shadow:0 0 0 1px var(--line),0 12px 26px rgba(10,30,60,.22)}
+.hw-scr{position:relative;height:100%;box-sizing:border-box;border-radius:17px;background:var(--surface);overflow:hidden;padding:20px 8px 8px;display:flex;flex-direction:column;gap:3px}
+.hw-scr::before{content:"";position:absolute;top:6px;left:50%;width:30px;height:6px;margin-left:-15px;border-radius:6px;background:#1B2333;z-index:3}
+.hw-ttl{font-size:11px;font-weight:800;line-height:1.2}
+.hw-lb{font-size:7.5px;line-height:1;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.hw-in{height:20px;box-sizing:border-box;border:1px solid var(--line);border-radius:6px;padding:0 6px;display:flex;align-items:center;font-size:10px;font-weight:600;white-space:nowrap;overflow:hidden}
+.hw-ty{display:inline-block;overflow:hidden;white-space:nowrap;vertical-align:bottom;border-right:1.5px solid transparent}
+.hw-btn{height:20px;border-radius:10px;background:var(--fill);color:var(--fill-ink);font-size:9px;font-weight:800;display:grid;place-items:center;margin:2px 0 4px}
+.hw-otp{display:flex;gap:4px}
+.hw-otp b{flex:1;height:22px;box-sizing:border-box;border:1px solid var(--accent);border-radius:5px;display:grid;place-items:center;font-size:11px;font-weight:800}
+.hw-tap{position:absolute;width:26px;height:26px;box-sizing:border-box;border-radius:50%;border:2px solid var(--accent);background:rgba(255,255,255,.4);opacity:0;pointer-events:none;z-index:5}
+.hw-sms{position:absolute;left:124px;top:14px;width:134px;box-sizing:border-box;display:flex;gap:7px;align-items:center;padding:7px 9px;border-radius:12px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);opacity:0}
+.hw-sms>i{width:24px;height:24px;border-radius:8px;background:var(--brand);color:var(--surface);display:grid;place-items:center;flex:none}
+.hw-sms>i svg{width:14px;height:14px}
+.hw-sms small{display:block;font-size:8px;line-height:1.2;color:var(--muted);font-weight:700}
+.hw-sms b{display:block;font-size:12.5px;letter-spacing:.06em}
+.hw-ok{position:absolute;left:128px;top:62px;width:130px;text-align:center}
+.hw-ring{position:relative;width:58px;height:58px;margin:0 auto 7px;border-radius:50%;background:var(--accent-soft);display:grid;place-items:center;box-shadow:0 0 0 5px var(--surface)}
+.hw-ring svg{width:30px;height:30px;stroke:var(--accent);stroke-width:3.2}
+.hw-ring path{stroke-dasharray:1;stroke-dashoffset:0}
+.hw-ok b{display:block;font-size:13px;line-height:1.2}
+.hw-ok small{display:block;margin-top:3px;font-size:9px;color:var(--muted);font-weight:600}
+.hw-cf{position:absolute;left:50%;top:50%;width:0;height:0;pointer-events:none;z-index:4}
+.hw-cf i{position:absolute;left:-3px;top:-3px;width:6px;height:6px;border-radius:2px;background:var(--accent);opacity:0}
+.hw-cf i:nth-child(3n+2){background:var(--fill)}
+.hw-cf i:nth-child(3n){background:var(--brand)}
+/* step 2: camera and the ad card */
+.hw-cam{padding:0;background:var(--sofa-bg,#0c5bce) var(--sofa,none) no-repeat;background-size:160px auto;background-position:50% 28px}
+.hw-chip{position:absolute;top:17px;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:8px;font-weight:700;color:#fff;background:rgba(0,0,0,.38);padding:2px 7px;border-radius:8px}
+.hw-fb{position:absolute;left:10px;right:10px;top:48px;height:68px;--c:#fff;background:linear-gradient(var(--c),var(--c)) top left/14px 2px,linear-gradient(var(--c),var(--c)) top left/2px 14px,linear-gradient(var(--c),var(--c)) top right/14px 2px,linear-gradient(var(--c),var(--c)) top right/2px 14px,linear-gradient(var(--c),var(--c)) bottom left/14px 2px,linear-gradient(var(--c),var(--c)) bottom left/2px 14px,linear-gradient(var(--c),var(--c)) bottom right/14px 2px,linear-gradient(var(--c),var(--c)) bottom right/2px 14px;background-repeat:no-repeat}
+.hw-sh{position:absolute;bottom:10px;left:50%;width:28px;height:28px;margin-left:-14px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.45)}
+.hw-flash{position:absolute;inset:0;background:#fff;opacity:0}
+.hw-ad{position:absolute;left:128px;top:0;width:130px;height:196px;box-sizing:border-box;padding:6px;border-radius:14px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);display:flex;flex-direction:column;gap:5px}
+.hw-ad::before{content:"";position:absolute;left:6px;right:6px;top:6px;height:60px;box-sizing:border-box;border:1.5px dashed var(--line);border-radius:9px}
+.hw-ad::after{content:"";position:absolute;inset:-1px;border-radius:14px;border:2px solid var(--accent);opacity:0;pointer-events:none}
+.hw-adph{position:relative;height:60px;flex:none;border-radius:9px;background:var(--sofa-bg,#0c5bce) var(--sofa,none) no-repeat;background-size:150px auto;background-position:50% -20px}
+.hw-live{position:absolute;left:5px;top:5px;display:flex;align-items:center;gap:3px;padding:2px 6px;border-radius:6px;background:#D32F2F;color:#fff;font-size:8px;font-weight:800;letter-spacing:.1em;line-height:1.3}
+.hw-live i{width:5px;height:5px;border-radius:50%;background:#fff}
+.hw-th{display:flex;gap:4px}
+.hw-th i{width:24px;height:17px;border-radius:4px;background:var(--sofa-bg,#0c5bce) var(--sofa,none) no-repeat;background-size:60px auto;background-position:50% -12px}
+.hw-th i:nth-child(2){background-size:120px auto;background-position:12% -40px}
+.hw-th i:nth-child(3){background-size:100px auto;background-position:88% -30px}
+.hw-cat{align-self:flex-start;display:flex;align-items:center;gap:4px;font-size:8.5px;font-weight:700;padding:3px 7px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.hw-cat svg{width:11px;height:11px}
+.hw-pr{font-family:var(--f-display);font-weight:var(--fd-w);font-size:calc(22px * var(--fd-scale));line-height:1;counter-reset:pr var(--pr)}
+.hw-pr::after{content:"\20B9" counter(pr)}
+.hw-loc{display:flex;align-items:center;gap:3px;font-size:8.5px;color:var(--muted);font-weight:600;white-space:nowrap}
+.hw-loc svg{width:10px;height:10px;flex:none}
+.hw-post{margin-top:auto;height:22px;flex:none;border-radius:11px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-size:9px;font-weight:800}
+.hw-post span{grid-area:1/1}
+.hw-post .p1{opacity:0}
+/* step 3: the map, the chat and the deal */
+.hw-mapst{background:var(--surface-2)}
+.hw-map{position:absolute;inset:0;background:linear-gradient(90deg,transparent 47px,var(--surface) 47px 53px,transparent 53px) 0 0/72px 100%,linear-gradient(transparent 39px,var(--surface) 39px 44px,transparent 44px) 0 0/100% 56px;opacity:.85}
+.hw-map::before{content:"";position:absolute;left:-10%;top:60%;width:120%;height:11px;background:var(--surface);transform:rotate(-13deg)}
+.hw-park{position:absolute;left:150px;top:132px;width:96px;height:72px;border-radius:24px;background:var(--accent-soft)}
+.hw-rad,.hw-pulse{position:absolute;left:-6px;top:52px;width:152px;height:152px;box-sizing:border-box;border-radius:50%}
+.hw-rad{border:1.5px dashed var(--accent);background:radial-gradient(closest-side,transparent 55%,var(--accent-soft))}
+.hw-pulse{border:2px solid var(--accent);opacity:0}
+.hw-dot{position:absolute;width:11px;height:11px;margin:-5.5px 0 0 -5.5px;box-sizing:border-box;border-radius:50%;background:var(--brand);border:2px solid var(--surface)}
+.hw-route{position:absolute;left:0;top:0;width:260px;height:196px;overflow:visible}
+.hw-rm{stroke:#fff;stroke-width:7;stroke-dasharray:1;stroke-dashoffset:0}
+.hw-rd{stroke:var(--accent);stroke-width:2.4;stroke-dasharray:4 4}
+.hw-home{position:absolute;left:55px;top:93px;width:30px;height:30px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:var(--brand);box-shadow:-3px 3px 8px rgba(0,0,0,.2);display:grid;place-items:center;z-index:2}
+.hw-home svg{width:15px;height:15px;transform:rotate(45deg);stroke:var(--surface);stroke-width:2.2}
+.hw-you{position:absolute;left:70px;top:132px;transform:translateX(-50%);padding:2px 5px;border-radius:5px;background:var(--surface);font-size:8.5px;font-weight:800;line-height:1.1;color:var(--brand);white-space:nowrap;z-index:2}
+.hw-buyer{position:absolute;left:83px;top:109px;width:26px;height:26px;box-sizing:border-box;border-radius:50%;background:var(--fill);color:var(--fill-ink);border:2px solid var(--surface);display:grid;place-items:center;box-shadow:0 4px 10px rgba(0,0,0,.2);z-index:3}
+.hw-buyer svg{width:13px;height:13px}
+.hw-km{position:absolute;bottom:calc(100% + 5px);left:50%;transform:translateX(-50%);white-space:nowrap;font-size:8.5px;font-weight:800;line-height:1;padding:3px 6px;border-radius:6px;background:var(--ink);color:var(--surface);opacity:0}
+.hw-chat{position:absolute;left:138px;top:0;width:120px;box-sizing:border-box;padding:7px;border-radius:12px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);display:flex;flex-direction:column;gap:5px;z-index:4}
+.hw-ch{display:flex;align-items:center;gap:5px;font-size:9.5px;font-weight:800;padding-bottom:5px;border-bottom:1px solid var(--line)}
+.hw-ch i{width:16px;height:16px;border-radius:50%;background:var(--fill);color:var(--fill-ink);display:grid;place-items:center;flex:none}
+.hw-ch svg{width:10px;height:10px}
+.hw-b{max-width:92%;box-sizing:border-box;padding:4px 7px;border-radius:9px;font-size:8.8px;line-height:1.3;font-weight:600}
+.hw-b.in{align-self:flex-start;background:var(--surface-2);border-bottom-left-radius:3px}
+.hw-b.out{align-self:flex-end;background:var(--fill);color:var(--fill-ink);border-bottom-right-radius:3px}
+.hw-bw{position:relative;display:flex;flex-direction:column}
+.hw-typ{position:absolute;right:0;top:0;display:flex;gap:3px;padding:6px 8px;border-radius:9px;background:var(--fill);opacity:0}
+.hw-typ i{width:4px;height:4px;border-radius:50%;background:var(--fill-ink)}
+.hw-deal{position:absolute;left:104px;top:156px;padding:3px 10px 2px;border:2.5px solid var(--accent);border-radius:8px;background:var(--surface);color:var(--accent);font-family:var(--f-display);font-weight:var(--fd-w);font-size:calc(21px * var(--fd-scale));line-height:1.1;text-transform:uppercase;letter-spacing:max(0em,var(--fd-track));white-space:nowrap;transform:rotate(-7deg);box-shadow:var(--shadow);z-index:5}
+/* sub-steps under the title: each one lights up when the scene reaches it */
+.hw-mi{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:5px}
+.hw-mi li{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;line-height:1.2;color:var(--accent);padding:3px 8px 3px 3px;border-radius:999px;background:var(--accent-soft);box-shadow:inset 0 0 0 1px transparent}
+.hw-mi li::before{content:attr(data-n);width:16px;height:16px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:var(--accent-ink);font-size:9.5px}
+/* scene timelines: every element's resting style is the finished picture; .is-on replays the story */
+@property --pr{syntax:"<integer>";inherits:false;initial-value:4500}
+.step.is-on .hw-mi li{animation:hwMi .45s var(--d) both}
+.step.is-on .hw-mi li::before{animation:hwMiN .45s var(--d) both}
+.step.is-on .hw-ty{animation:hwType var(--t,1s) steps(var(--n,8)) var(--d,0s) backwards,hwCaret 1.5s linear var(--d,0s)}
+.step.is-on .hw-tap{animation:hwTap .8s var(--d) ease-out both}
+.step.is-on .hw-s1 .hw-btn{animation:hwPress .35s 2.35s both}
+.step.is-on .hw-sms{animation:hwSms 2.6s 2.7s cubic-bezier(.2,.8,.2,1) both}
+.step.is-on .hw-otp b{animation:hwBox .3s var(--d) both}
+.step.is-on .hw-otp i{animation:hwUp .3s var(--d) both}
+.step.is-on .hw-ring{animation:hwPopIn .55s 4.55s cubic-bezier(.34,1.56,.64,1) both}
+.step.is-on .hw-ring path{animation:hwDraw .45s 4.85s ease-out both}
+.step.is-on .hw-ok b{animation:hwUp .4s 5s both}
+.step.is-on .hw-ok small{animation:hwUp .4s 5.15s both}
+.step.is-on .hw-cf i{animation:hwCf .8s var(--d) ease-out both}
+.step.is-on .hw-fb{animation:hwFocus .7s .25s cubic-bezier(.2,.8,.2,1) both,hwBlink .3s .95s both}
+.step.is-on .hw-sh{animation:hwPress .3s 1s both}
+.step.is-on .hw-flash{animation:hwFlash .5s 1.1s ease-out both}
+.step.is-on .hw-adph{animation:hwFly .6s 1.35s cubic-bezier(.2,.8,.2,1) both}
+.step.is-on .hw-th i{animation:hwPopIn .35s var(--d) cubic-bezier(.34,1.56,.64,1) both}
+.step.is-on .hw-cat{animation:hwPopIn .4s 2.75s cubic-bezier(.34,1.56,.64,1) both}
+.step.is-on .hw-pr{animation:hwUp .3s 3.2s both,hwCount 1s 3.25s cubic-bezier(.2,.7,.3,1) both}
+.step.is-on .hw-loc{animation:hwUp .35s 3.95s both}
+.step.is-on .hw-post{animation:hwPostBg 4.95s linear both,hwPress .35s 4.45s both}
+.step.is-on .hw-post .p1{animation:hwOut .3s 4.85s both}
+.step.is-on .hw-post .p2{animation:hwUp .3s 4.95s both}
+.step.is-on .hw-live{animation:hwStamp .5s 4.95s cubic-bezier(.34,1.56,.64,1) both}
+.step.is-on .hw-live i{animation:hwBlinkDot 1s 5.4s ease-in-out infinite}
+.step.is-on .hw-ad::after{animation:hwRing 1.1s 5s ease-out}
+.step.is-on .hw-home{animation:hwDrop .5s .1s cubic-bezier(.34,1.56,.64,1) both}
+.step.is-on .hw-you{animation:hwUp .35s .45s both}
+.step.is-on .hw-rad{animation:hwGrow .8s .25s cubic-bezier(.2,.8,.2,1) both}
+.step.is-on .hw-pulse{animation:hwPulse 2.4s .3s ease-out infinite}
+.step.is-on .hw-pulse.p2{animation-delay:1.5s}
+.step.is-on .hw-dot{animation:hwPopIn .35s var(--d) cubic-bezier(.34,1.56,.64,1) both}
+.step.is-on .hw-buyer{animation:hwPopIn .45s 1.75s cubic-bezier(.34,1.56,.64,1) both,hwWalk 1.3s 4.7s ease-in-out both}
+.step.is-on .hw-km{animation:hwKm 2.9s 1.9s both}
+.step.is-on .hw-rm{animation:hwDraw 1.3s 4.7s ease-in-out both}
+.step.is-on .hw-chat{animation:hwSlide .45s 2.2s cubic-bezier(.2,.8,.2,1) both}
+.step.is-on .hw-b{animation:hwUp .35s var(--d) both}
+.step.is-on .hw-typ{animation:hwTyp .6s 2.9s both}
+.step.is-on .hw-typ i{animation:hwBounce .5s ease-in-out infinite}
+.step.is-on .hw-typ i:nth-child(2){animation-delay:.1s}
+.step.is-on .hw-typ i:nth-child(3){animation-delay:.2s}
+.step.is-on .hw-deal{animation:hwStampR .5s 6s cubic-bezier(.34,1.56,.64,1) both}
+.how.is-paused .step.is-on *,.how.is-paused .step.is-on *::before,.how.is-paused .step.is-on *::after{animation-play-state:paused!important}
+@keyframes hwMi{from{background:transparent;color:var(--muted);box-shadow:inset 0 0 0 1px var(--line)}}
+@keyframes hwMiN{from{background:var(--line);color:var(--muted);transform:scale(.8)}}
+@keyframes hwType{from{width:0}to{width:var(--w)}}
+@keyframes hwCaret{0%,90%{border-right-color:var(--accent)}100%{border-right-color:transparent}}
+@keyframes hwTap{0%{opacity:0;transform:scale(1.8)}30%{opacity:1;transform:scale(.8)}55%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.6)}}
+@keyframes hwPress{50%{transform:scale(.88)}}
+@keyframes hwSms{0%{opacity:0;transform:translate(24px,-6px)}12%,82%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-10px)}}
+@keyframes hwBox{from{border-color:var(--line)}40%{transform:scale(1.14)}}
+@keyframes hwUp{from{opacity:0;transform:translateY(8px)}}
+@keyframes hwOut{from{opacity:1;transform:none}to{opacity:0;transform:translateY(-8px)}}
+@keyframes hwPopIn{from{opacity:0;transform:scale(.2)}}
+@keyframes hwDraw{from{stroke-dashoffset:1}}
+@keyframes hwCf{0%{opacity:1;transform:rotate(var(--a)) translateY(0) scale(.6)}100%{opacity:0;transform:rotate(var(--a)) translateY(-46px) scale(1)}}
+@keyframes hwFocus{from{opacity:0;transform:scale(1.3)}60%{opacity:1}}
+@keyframes hwBlink{50%{opacity:.25}}
+@keyframes hwFlash{0%{opacity:0}15%{opacity:.95}100%{opacity:0}}
+@keyframes hwFly{from{opacity:0;transform:translate(-131px,54px) scale(.5) rotate(-10deg)}25%{opacity:1}}
+@keyframes hwCount{from{--pr:0}to{--pr:4500}}
+@keyframes hwPostBg{0%,97%{background:var(--fill);color:var(--fill-ink)}}
+@keyframes hwStamp{from{opacity:0;transform:scale(2.2) rotate(-12deg)}}
+@keyframes hwStampR{from{opacity:0;transform:scale(2.4) rotate(-18deg)}}
+@keyframes hwBlinkDot{50%{opacity:.25}}
+@keyframes hwRing{0%{opacity:.8;transform:none}100%{opacity:0;transform:scale(1.12)}}
+@keyframes hwDrop{from{opacity:0;transform:translateY(-30px) rotate(-45deg)}}
+@keyframes hwGrow{from{opacity:0;transform:scale(.1)}}
+@keyframes hwPulse{0%{opacity:.8;transform:scale(.1)}100%{opacity:0;transform:none}}
+@keyframes hwWalk{0%{left:99px;top:53px}55%{left:97px;top:85px}100%{left:83px;top:109px}}
+@keyframes hwKm{0%{opacity:0;transform:translate(-50%,4px)}12%,85%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,0)}}
+@keyframes hwSlide{from{opacity:0;transform:translateX(26px)}}
+@keyframes hwTyp{0%{opacity:0}15%,85%{opacity:1}100%{opacity:0}}
+@keyframes hwBounce{50%{transform:translateY(-3px)}}
 @media (max-width:820px){
   .how{padding-block:44px 8px}
   .how-head{margin-bottom:18px}
-  .steps{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:min(82%,340px);gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:2px max(16px,env(safe-area-inset-left,0px)) 8px;scroll-padding-inline:max(16px,env(safe-area-inset-left,0px))}
+  .steps{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:min(82%,340px);gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:10px max(16px,env(safe-area-inset-left,0px)) 10px;scroll-padding-inline:max(16px,env(safe-area-inset-left,0px))}
   .steps::-webkit-scrollbar{display:none}
-  .step{scroll-snap-align:start;padding:18px}
+  .step{scroll-snap-align:start;padding:0 18px 18px}
+  .step::before,.step::after{display:none}
+  .hw-stage{margin-inline:-18px}
 }
+/* very narrow phones: the card is under 260px wide, so shrink the scene to fit */
+@media (max-width:359px){.hw-sc{transform:scale(.88);transform-origin:50% 0}}
 
 /* ---------- FEED ---------- */
 .feed{padding-block:32px 72px}
@@ -540,25 +735,6 @@ html[lang="hi"] h1,html[lang="hi"] h2,html[lang="hi"] h3,html[lang="hi"] .lc-pri
 @keyframes nod{0%,100%{transform:none}30%{transform:translateY(2px) rotate(-6deg)}60%{transform:translateY(-1px) rotate(4deg)}}
 .search:focus-within svg{color:var(--accent);animation:searchWiggle .6s ease}
 @keyframes searchWiggle{0%,100%{transform:none}30%{transform:rotate(-16deg) scale(1.12)}65%{transform:rotate(8deg)}}
-/* how it works: icons draw themselves once the section scrolls in, then keep a small idle loop */
-.step-ic{position:relative;overflow:hidden;animation:icFloat 4.2s ease-in-out infinite}
-.step:nth-child(2) .step-ic{animation-delay:-1.4s}.step:nth-child(3) .step-ic{animation-delay:-2.8s}
-@keyframes icFloat{0%,100%{transform:none}50%{transform:translateY(-4px)}}
-.step-ic svg *{stroke-dasharray:1 1;stroke-dashoffset:0}
-.how.in .step-ic svg *{animation:draw 1s cubic-bezier(.65,0,.35,1) backwards}
-.how.in .step:nth-child(2) .step-ic svg *{animation-delay:.2s}
-.how.in .step:nth-child(3) .step-ic svg *{animation-delay:.4s}
-@keyframes draw{from{stroke-dashoffset:1}}
-.how.in .step-ic .ic-check{animation:draw 1s cubic-bezier(.65,0,.35,1) backwards,redraw 4s 1.6s ease-in-out infinite}
-@keyframes redraw{0%,70%,100%{stroke-dashoffset:0}80%,86%{stroke-dashoffset:1}}
-.ic-lens{transform-box:fill-box;transform-origin:center}
-.how.in .step-ic .ic-lens{animation:draw 1s .2s cubic-bezier(.65,0,.35,1) backwards,lens 3.4s 1.6s ease-in-out infinite}
-@keyframes lens{0%,80%,100%{transform:none}88%{transform:scale(.55)}}
-.step:nth-child(2) .step-ic::after{content:"";position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
-.how.in .step:nth-child(2) .step-ic::after{animation:icFlash 3.4s 1.6s ease-out infinite}
-@keyframes icFlash{0%,86%,100%{opacity:0}89%{opacity:.8}}
-.how.in .step-ic .ic-type{animation:draw 1s .4s cubic-bezier(.65,0,.35,1) backwards,typeLines 3s 1.6s ease-in-out infinite}
-@keyframes typeLines{0%{stroke-dashoffset:1}40%,80%{stroke-dashoffset:0}100%{stroke-dashoffset:-1}}
 /* category chips and post tiles */
 .chip svg{transition:transform .35s cubic-bezier(.34,1.56,.64,1)}
 @media (hover:hover){.chip:hover svg{transform:rotate(-10deg) scale(1.18)}}
@@ -599,7 +775,7 @@ html[lang="hi"] h1,html[lang="hi"] h2,html[lang="hi"] h3,html[lang="hi"] .lc-pri
   .cta,.lcard,.fab,.toast{transition:none}
   .cta-ring::after,.cta-face::after{animation:none}
   dialog[open],.lcard.flash{animation:none}
-  .mk-r,.mk-d,.mk-w1,.mk-w2,.step-ic,.step-ic *,.step-ic::after,.cta-ic::after,.bn-plus,.lcard.rise,.catgrid.in .cat-t,.chip.jmp svg,.heart.pop svg,.bn.bump svg,.pill svg,.search svg{animation:none!important}
+  .mk-r,.mk-d,.mk-w1,.mk-w2,.cta-ic::after,.bn-plus,.lcard.rise,.catgrid.in .cat-t,.chip.jmp svg,.heart.pop svg,.bn.bump svg,.pill svg,.search svg{animation:none!important}
 }
 /* font pairings for the font picker (Google Fonts, loaded on demand) */
 :root{--fd-w:700;--fd-scale:1;--fd-track:.012em;--fd-lh:.9}
@@ -756,23 +932,87 @@ html.pal-anim,html.pal-anim *{transition:background-color .45s ease,border-color
         <p class="eyebrow hand" data-i="howEyebrow">Itna aasaan hai</p>
         <h2 class="sec" id="howTitle" data-i="howTitle">Teen step mein purana saamaan naye ghar</h2>
       </div>
+      <div class="hw-ctl" role="group" data-ia="howCtl" aria-label="Steps ka demo">
+        <button type="button" data-go="0">1</button><button type="button" data-go="1">2</button><button type="button" data-go="2">3</button>
+        <button type="button" class="hw-pp" id="howPP" aria-pressed="false" aria-label="Demo roko"><svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg><svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10-6.5a1 1 0 0 0 0-1.72l-10-6.5A1 1 0 0 0 8 5.5z"/></svg></button>
+      </div>
     </div>
     <ol class="steps">
       <li class="step">
-        <div class="step-top"><span class="step-ic"><svg viewBox="0 0 28 28" aria-hidden="true"><rect pathLength="1" x="8" y="3" width="12" height="22" rx="3"/><path pathLength="1" d="M12.5 21h3"/><path pathLength="1" class="ic-check" d="M11 12.5l2.2 2.2 4-4.2"/></svg></span><span class="step-n"><span data-i="step">Step</span> 1</span></div>
+        <div class="hw-stage" aria-hidden="true"><div class="hw-bar"><i></i></div>
+          <div class="hw-sc hw-s1">
+            <div class="hw-ph"><div class="hw-scr">
+              <b class="hw-ttl" data-i="d1Title">Meri ID</b>
+              <span class="hw-lb" data-i="d1Name">Naam</span>
+              <span class="hw-in"><span class="hw-ty" style="--d:.35s;--t:.7s" data-i="d1NameV">Rahul</span></span>
+              <span class="hw-lb" data-i="d1Mob">Mobile</span>
+              <span class="hw-in"><span class="hw-ty" style="--d:1.2s;--t:1s">98290 41210</span></span>
+              <span class="hw-btn" data-i="d1Send">OTP bhejo</span>
+              <span class="hw-lb">OTP</span>
+              <span class="hw-otp"><b style="--d:3.3s"><i>4</i></b><b style="--d:3.55s"><i>8</i></b><b style="--d:3.8s"><i>2</i></b><b style="--d:4.05s"><i>1</i></b></span>
+            </div></div>
+            <span class="hw-tap" style="--d:2.2s;left:49px;top:110px"></span>
+            <div class="hw-sms"><i><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg></i><span><small data-i="d1Sms">Aapka OTP</small><b>4821</b></span></div>
+            <div class="hw-ok"><span class="hw-ring"><svg viewBox="0 0 24 24"><path pathLength="1" d="M5 12.5l4.5 4.5L19 7.5"/></svg><span class="hw-cf" style="--d:4.7s"><i style="--a:0deg"></i><i style="--a:45deg"></i><i style="--a:90deg"></i><i style="--a:135deg"></i><i style="--a:180deg"></i><i style="--a:225deg"></i><i style="--a:270deg"></i><i style="--a:315deg"></i></span></span><b data-i="d1Ok">ID ban gayi!</b><small data-i="d1OkS">Number verified</small></div>
+          </div>
+        </div>
+        <div class="step-top"><span class="step-n"><span data-i="step">Step</span> 1</span></div>
         <h3 data-i="s1t">Apni ID banao</h3>
+        <ol class="hw-mi"><li data-n="1" style="--d:.3s" data-i="m1a">Naam</li><li data-n="2" style="--d:1.2s" data-i="m1b">Number</li><li data-n="3" style="--d:2.7s" data-i="m1c">OTP</li><li data-n="4" style="--d:4.55s" data-i="m1d">Ready ✓</li></ol>
         <p data-i="s1p">Naam aur mobile number daalo, OTP se verify karo. Ek baar ka kaam, 30 second.</p>
         <button type="button" class="link" data-act="login" data-i="s1l">ID banao →</button>
       </li>
       <li class="step">
-        <div class="step-top"><span class="step-ic"><svg viewBox="0 0 28 28" aria-hidden="true"><path pathLength="1" d="M3.5 9.5a2 2 0 0 1 2-2h3l2-3h7l2 3h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-17a2 2 0 0 1-2-2z"/><circle pathLength="1" class="ic-lens" cx="14" cy="15" r="4.2"/></svg></span><span class="step-n"><span data-i="step">Step</span> 2</span></div>
+        <div class="hw-stage" aria-hidden="true"><div class="hw-bar"><i></i></div>
+          <div class="hw-sc hw-s2">
+            <div class="hw-ph"><div class="hw-scr hw-cam">
+              <span class="hw-chip"><span data-i="d2Shot">Photo</span> 1/3</span>
+              <span class="hw-fb"></span>
+              <span class="hw-sh"></span>
+              <span class="hw-flash"></span>
+            </div></div>
+            <span class="hw-tap" style="--d:.85s;left:49px;top:154px"></span>
+            <div class="hw-ad">
+              <span class="hw-adph"><span class="hw-live"><i></i>LIVE</span></span>
+              <span class="hw-th"><i style="--d:1.95s"></i><i style="--d:2.15s"></i><i style="--d:2.35s"></i></span>
+              <span class="hw-cat"><svg viewBox="0 0 24 24"><path d="M4 11V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3M2 12a2 2 0 0 1 4 0v2h12v-2a2 2 0 0 1 4 0v5H2zM5 17v2M19 17v2"/></svg><span data-i="d2Cat">Furniture</span></span>
+              <span class="hw-pr"></span>
+              <span class="hw-loc"><svg viewBox="0 0 24 24"><path d="M12 22s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg><span data-i="d2Loc">Malviya Nagar</span></span>
+              <span class="hw-post"><span class="p1" data-i="d2Post">Post karo</span><span class="p2" data-i="d2Live">Live hai</span></span>
+            </div>
+            <span class="hw-tap" style="--d:4.35s;left:180px;top:166px"></span>
+          </div>
+        </div>
+        <div class="step-top"><span class="step-n"><span data-i="step">Step</span> 2</span></div>
         <h3 data-i="s2t">Photo khicho, ad daalo</h3>
+        <ol class="hw-mi"><li data-n="1" style="--d:.2s" data-i="m2a">Photo</li><li data-n="2" style="--d:2.75s" data-i="m2b">Category</li><li data-n="3" style="--d:3.2s" data-i="m2c">Price</li><li data-n="4" style="--d:4.95s" data-i="m2d">Live ✓</li></ol>
         <p data-i="s2p">Category chuno, 2–4 photo, price aur apna area daalo. Ad turant live ho jaata hai.</p>
         <button type="button" class="link" data-act="sell" data-i="s2l">Ad post karo →</button>
       </li>
       <li class="step">
-        <div class="step-top"><span class="step-ic"><svg viewBox="0 0 28 28" aria-hidden="true"><path pathLength="1" d="M5 6h18a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-9l-5 4v-4H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"/><path pathLength="1" class="ic-type" d="M9 11h10M9 14.5h6"/></svg></span><span class="step-n"><span data-i="step">Step</span> 3</span></div>
+        <div class="hw-stage hw-mapst" aria-hidden="true"><div class="hw-bar"><i></i></div>
+          <span class="hw-map"></span>
+          <div class="hw-sc hw-s3">
+            <span class="hw-park"></span>
+            <span class="hw-rad"></span><span class="hw-pulse"></span><span class="hw-pulse p2"></span>
+            <span class="hw-dot" style="--d:.8s;left:20px;top:90px"></span><span class="hw-dot" style="--d:1s;left:124px;top:150px"></span><span class="hw-dot" style="--d:1.2s;left:24px;top:166px"></span><span class="hw-dot" style="--d:1.4s;left:104px;top:184px"></span>
+            <svg class="hw-route" viewBox="0 0 260 196"><defs><mask id="hwRm" maskUnits="userSpaceOnUse" x="0" y="0" width="260" height="196"><path class="hw-rm" pathLength="1" d="M112 66C114 84 112 98 106 108S96 120 86 124"/></mask></defs><path class="hw-rd" d="M112 66C114 84 112 98 106 108S96 120 86 124" mask="url(#hwRm)"/></svg>
+            <span class="hw-home"><svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9h-5v-6h-6v6H4z"/></svg></span>
+            <span class="hw-you" data-i="d3You">Aap</span>
+            <span class="hw-buyer"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span class="hw-km">1.2 km</span></span>
+            <span class="hw-cf" style="--d:6s;left:70px;top:108px"><i style="--a:0deg"></i><i style="--a:45deg"></i><i style="--a:90deg"></i><i style="--a:135deg"></i><i style="--a:180deg"></i><i style="--a:225deg"></i><i style="--a:270deg"></i><i style="--a:315deg"></i></span>
+            <div class="hw-chat">
+              <span class="hw-ch"><i><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></i><span data-i="d3Buyer">Aman</span></span>
+              <span class="hw-b in" style="--d:2.5s" data-i="d3B1">Sofa abhi hai?</span>
+              <span class="hw-bw"><span class="hw-typ"><i></i><i></i><i></i></span><span class="hw-b out" style="--d:3.5s" data-i="d3B2">Haan! Shaam 6 baje aao</span></span>
+              <span class="hw-b in" style="--d:4.15s" data-i="d3B3">Pakka, aa raha hoon</span>
+            </div>
+            <span class="hw-deal" data-i="d3Deal">Deal pakki!</span>
+          </div>
+        </div>
+        <div class="step-top"><span class="step-n"><span data-i="step">Step</span> 3</span></div>
         <h3 data-i="s3t">Paas wale buyer se deal</h3>
+        <ol class="hw-mi"><li data-n="1" style="--d:.8s" data-i="m3a">Paas wale</li><li data-n="2" style="--d:2.2s" data-i="m3b">Chat</li><li data-n="3" style="--d:4.7s" data-i="m3c">Milo</li><li data-n="4" style="--d:6s" data-i="m3d">Bik gaya ✓</li></ol>
         <p data-i="s3p">Aapke area ke log ad dekhte hain, chat karte hain aur ghar aakar saamaan le jaate hain.</p>
         <button type="button" class="link" data-act="browse" data-i="s3l">Nearby items dekho →</button>
       </li>
@@ -975,7 +1215,7 @@ hn:{code:"hi-Latn",name:"Hinglish",short:"Hi-En",navHome:"Home",navNear:"Paas me
   heroSub:"Sofa, fridge, TV, cycle — jo bhi ab kaam ka nahi, uski photo khicho aur 2 minute mein post karo. Aapke aas-paas ke log dekhenge, chat karenge aur ghar se le jayenge.",
   nearNote:"Aapke paas wale",ctaSell:"Saamaan becho",freeNote:"Bilkul free!",browseLink:"ya paas mein bik rahe items dekho ↓",
   pickerAria:"Category chuno aur paas ke items dekho",locAria:"Location badlo",changeLoc:"Location badlo",
-  howEyebrow:"Itna aasaan hai",howTitle:"Teen step mein purana saamaan naye ghar",step:"Step",
+  howEyebrow:"Itna aasaan hai",howTitle:"Teen step mein purana saamaan naye ghar",step:"Step",howCtl:"Steps ka demo",howGo:"Step {n} dekho",howPause:"Demo roko",howPlay:"Demo chalao",m1a:"Naam",m1b:"Number",m1c:"OTP",m1d:"Ready ✓",m2a:"Photo",m2b:"Category",m2c:"Price",m2d:"Live ✓",m3a:"Paas wale",m3b:"Chat",m3c:"Milo",m3d:"Bik gaya ✓",d1Title:"Meri ID",d1Name:"Naam",d1NameV:"Rahul",d1Mob:"Mobile",d1Send:"OTP bhejo",d1Sms:"Aapka OTP",d1Ok:"ID ban gayi!",d1OkS:"Number verified",d2Shot:"Photo",d2Cat:"Furniture",d2Loc:"Malviya Nagar",d2Post:"Post karo",d2Live:"Live hai",d3You:"Aap",d3Buyer:"Aman",d3B1:"Sofa abhi hai?",d3B2:"Haan! Shaam 6 baje aao",d3B3:"Pakka, aa raha hoon",d3Deal:"Deal pakki!",
   s1t:"Apni ID banao",s1p:"Naam aur mobile number daalo, OTP se verify karo. Ek baar ka kaam, 30 second.",s1l:"ID banao →",
   s2t:"Photo khicho, ad daalo",s2p:"Category chuno, 2–4 photo, price aur apna area daalo. Ad turant live ho jaata hai.",s2l:"Ad post karo →",
   s3t:"Paas wale buyer se deal",s3p:"Aapke area ke log ad dekhte hain, chat karte hain aur ghar aakar saamaan le jaate hain.",s3l:"Nearby items dekho →",
@@ -1036,7 +1276,7 @@ en:{code:"en",name:"English",short:"EN",navHome:"Home",navNear:"Nearby",navMe:"A
   heroSub:"Sofa, fridge, TV, cycle — whatever you don't use any more, snap a photo and post it in 2 minutes. Buyers near you will see it, chat, and pick it up from your door.",
   nearNote:"Right near you",ctaSell:"Sell your stuff",freeNote:"Totally free!",browseLink:"or browse items for sale near you ↓",
   pickerAria:"Pick a category to see items near you",locAria:"Change location",changeLoc:"Change location",
-  howEyebrow:"It's this simple",howTitle:"Old stuff to a new home in three steps",step:"Step",
+  howEyebrow:"It's this simple",howTitle:"Old stuff to a new home in three steps",step:"Step",howCtl:"Steps demo",howGo:"Show step {n}",howPause:"Pause demo",howPlay:"Play demo",m1a:"Name",m1b:"Number",m1c:"OTP",m1d:"Ready ✓",m2a:"Photo",m2b:"Category",m2c:"Price",m2d:"Live ✓",m3a:"Nearby",m3b:"Chat",m3c:"Meet",m3d:"Sold ✓",d1Title:"My account",d1Name:"Name",d1NameV:"Rahul",d1Mob:"Mobile",d1Send:"Send OTP",d1Sms:"Your OTP",d1Ok:"You're in!",d1OkS:"Number verified",d2Shot:"Photo",d2Cat:"Furniture",d2Loc:"Malviya Nagar",d2Post:"Post ad",d2Live:"Live now",d3You:"You",d3Buyer:"Aman",d3B1:"Is the sofa still there?",d3B2:"Yes! Come at 6 pm",d3B3:"Great, on my way",d3Deal:"Deal done!",
   s1t:"Create your account",s1p:"Enter your name and mobile number and verify with an OTP. A one-time, 30-second job.",s1l:"Create account →",
   s2t:"Snap a photo, post an ad",s2p:"Pick a category, add 2–4 photos, a price and your area. The ad goes live right away.",s2l:"Post an ad →",
   s3t:"Deal with a buyer nearby",s3p:"People in your area see the ad, chat with you and come to collect the item.",s3l:"Browse nearby →",
@@ -1097,7 +1337,7 @@ hi:{code:"hi",name:"हिंदी",short:"हिं",navHome:"होम",navNe
   heroSub:"सोफ़ा, फ़्रिज, टीवी, साइकिल — जो भी अब काम का नहीं, उसकी फ़ोटो खींचो और 2 मिनट में पोस्ट करो। आपके आस-पास के लोग देखेंगे, चैट करेंगे और घर से ले जाएँगे।",
   nearNote:"आपके पास वाले",ctaSell:"सामान बेचो",freeNote:"बिल्कुल फ़्री!",browseLink:"या पास में बिक रहा सामान देखो ↓",
   pickerAria:"कैटेगरी चुनो और पास का सामान देखो",locAria:"लोकेशन बदलो",changeLoc:"लोकेशन बदलो",
-  howEyebrow:"इतना आसान है",howTitle:"तीन स्टेप में पुराना सामान नए घर",step:"स्टेप",
+  howEyebrow:"इतना आसान है",howTitle:"तीन स्टेप में पुराना सामान नए घर",step:"स्टेप",howCtl:"स्टेप्स का डेमो",howGo:"स्टेप {n} देखो",howPause:"डेमो रोको",howPlay:"डेमो चलाओ",m1a:"नाम",m1b:"नंबर",m1c:"OTP",m1d:"तैयार ✓",m2a:"फ़ोटो",m2b:"कैटेगरी",m2c:"कीमत",m2d:"लाइव ✓",m3a:"पास वाले",m3b:"चैट",m3c:"मिलो",m3d:"बिक गया ✓",d1Title:"मेरी ID",d1Name:"नाम",d1NameV:"राहुल",d1Mob:"मोबाइल",d1Send:"OTP भेजो",d1Sms:"आपका OTP",d1Ok:"ID बन गई!",d1OkS:"नंबर वेरिफ़ाइड",d2Shot:"फ़ोटो",d2Cat:"फ़र्नीचर",d2Loc:"मालवीय नगर",d2Post:"पोस्ट करो",d2Live:"लाइव है",d3You:"आप",d3Buyer:"अमन",d3B1:"सोफ़ा अभी है?",d3B2:"हाँ! शाम 6 बजे आओ",d3B3:"पक्का, आ रहा हूँ",d3Deal:"डील पक्की!",
   s1t:"अपनी ID बनाओ",s1p:"नाम और मोबाइल नंबर डालो, OTP से वेरिफ़ाई करो। एक बार का काम, 30 सेकंड।",s1l:"ID बनाओ →",
   s2t:"फ़ोटो खींचो, ऐड डालो",s2p:"कैटेगरी चुनो, 2–4 फ़ोटो, दाम और अपना एरिया डालो। ऐड तुरंत लाइव हो जाता है।",s2l:"ऐड पोस्ट करो →",
   s3t:"पास वाले खरीदार से डील",s3p:"आपके एरिया के लोग ऐड देखते हैं, चैट करते हैं और घर आकर सामान ले जाते हैं।",s3l:"पास का सामान देखो →",
@@ -1593,6 +1833,8 @@ $("#logout").addEventListener("click",function(){user=null;try{localStorage.remo
 
 /* ---------- language switch ---------- */
 function buildStatic(){
+  $$("#how [data-go]").forEach(function(b,i){b.setAttribute("aria-label",t("howGo",{n:i+1}))});
+  var hp=$("#howPP");if(hp)hp.setAttribute("aria-label",t(hp.getAttribute("aria-pressed")==="true"?"howPlay":"howPause"));
   $("#radiusSel").innerHTML=RADII.map(function(r){return '<option value="'+r+'"'+(r===radius?" selected":"")+'>'+te("radiusOpt",{r:r})+'</option>'}).join("");
   $("#catGrid").innerHTML=CATS.map(function(c,i){return '<button type="button" class="cat-t" data-cat="'+c.k+'" style="--i:'+i+'"><i style="--c:'+COL[c.i]+'">'+mini(c.i,30)+'</i>'+esc(catName(c.k))+'</button>'}).join("");
   var cur=draft?draft.cond:"good";
@@ -1851,10 +2093,60 @@ if("IntersectionObserver" in window){
 /* ---------- icon effects ---------- */
 function replay(el,cls){if(!el||reduce)return;el.classList.remove(cls);void el.offsetWidth;el.classList.add(cls)}
 function burst(el){if(reduce)return;for(var k=0;k<8;k++){var d=document.createElement("span");d.className="burst";d.style.setProperty("--a",(k*45)+"deg");el.appendChild(d);setTimeout(function(n){n.remove()}.bind(null,d),750)}}
-if("IntersectionObserver" in window){
-  var howIO=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add("in");howIO.unobserve(en.target)}})},{threshold:.35});
-  howIO.observe($("#how"));
-}
+/* how it works: a looping walkthrough, one card at a time. Each scene is a CSS timeline that
+   restarts when .is-on is toggled, and the progress bar's animationend hands over to the next card. */
+(function(){
+  var sec=$("#how"),rail=$(".steps",sec),steps=$$(".step",sec),dots=$$("[data-go]",sec),pp=$("#howPP");
+  var DUR=[7,7.2,8],cur=-1,gen=0,inView=false,userPaused=false,started=false,waitLoop=false,lastUser=0,autoScroll=false,scT=0,revT=0;
+  if(IMG.sofa){sec.style.setProperty("--sofa",'url("'+IMG.sofa.src+'")');sec.style.setProperty("--sofa-bg",IMG.sofa.bg||"#0c5bce")}
+  steps.forEach(function(st,i){st.style.setProperty("--dur",DUR[i]+"s")});
+  if(reduce){sec.classList.add("is-still");return}
+  function paused(){return userPaused||!inView||document.hidden}
+  function sync(){
+    sec.classList.toggle("is-paused",paused());sec.classList.toggle("is-upaused",userPaused);
+    pp.setAttribute("aria-pressed",String(userPaused));pp.setAttribute("aria-label",t(userPaused?"howPlay":"howPause"));
+    if(waitLoop&&!paused()){waitLoop=false;play(0,true)}
+  }
+  function padL(){return parseFloat(getComputedStyle(rail).scrollPaddingLeft)||16}
+  function reveal(i){
+    if(rail.scrollWidth<=rail.clientWidth+4)return;
+    autoScroll=true;clearTimeout(revT);revT=setTimeout(function(){autoScroll=false},900);
+    rail.scrollTo({left:rail.scrollLeft+steps[i].getBoundingClientRect().left-rail.getBoundingClientRect().left-padL(),behavior:"smooth"});
+  }
+  function play(i,auto){
+    cur=i;gen++;waitLoop=false;sec.classList.add("is-live");
+    steps.forEach(function(st,k){st.classList.remove("is-on");st.classList.toggle("is-done",k<i);st.classList.toggle("is-lead",k===i-1)});
+    var st=steps[i];
+    $$(".hw-ty",st).forEach(function(el){el.style.setProperty("--w",el.scrollWidth+"px");el.style.setProperty("--n",Math.max(1,Array.from(el.textContent).length))});
+    void st.offsetWidth;st.classList.add("is-on");
+    dots.forEach(function(d,k){if(k===i)d.setAttribute("aria-current","step");else d.removeAttribute("aria-current")});
+    if(auto&&inView&&Date.now()-lastUser>6000)reveal(i);
+  }
+  function go(i){lastUser=Date.now();userPaused=false;play(i);sync()}
+  steps.forEach(function(st,i){
+    $(".hw-bar i",st).addEventListener("animationend",function(e){
+      if(e.animationName!=="hwFill"||cur!==i)return;
+      if(i<steps.length-1){play(i+1,true);return}
+      var g=gen;setTimeout(function(){if(g!==gen)return;if(paused())waitLoop=true;else play(0,true)},1600);
+    });
+    $(".hw-stage",st).addEventListener("click",function(){go(i)});
+  });
+  dots.forEach(function(d,i){d.addEventListener("click",function(){go(i);reveal(i)})});
+  pp.addEventListener("click",function(){userPaused=!userPaused;lastUser=Date.now();sync()});
+  rail.addEventListener("pointerdown",function(){lastUser=Date.now()},{passive:true});
+  rail.addEventListener("scroll",function(){
+    if(autoScroll)return;lastUser=Date.now();clearTimeout(scT);
+    scT=setTimeout(function(){
+      var x=rail.getBoundingClientRect().left+padL(),best=0,bd=1e9;
+      steps.forEach(function(st,k){var d=Math.abs(st.getBoundingClientRect().left-x);if(d<bd){bd=d;best=k}});
+      if(best!==cur)play(best);
+    },180);
+  },{passive:true});
+  document.addEventListener("visibilitychange",sync);
+  if("IntersectionObserver" in window){
+    new IntersectionObserver(function(es){inView=es[0].isIntersecting;if(inView&&!started){started=true;play(0)}sync()},{threshold:.3}).observe(rail);
+  }else{inView=true;started=true;play(0);sync()}
+})();
 document.addEventListener("pointerdown",function(e){
   if(reduce)return;var el=e.target.closest(".btn,.chip,.pill,.cat-t,.seg button,.bn:not(.bn-sell)");if(!el)return;
   var r=el.getBoundingClientRect(),d=Math.max(r.width,r.height)*2.2,s=document.createElement("span");s.className="rip";
